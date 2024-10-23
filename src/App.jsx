@@ -9,6 +9,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const getData = async () => {
     try {
@@ -75,7 +76,7 @@ function App() {
     const parts = text.split(new RegExp(`(${query})`, "gi"));
     return parts.map((part, index) =>
       part.toLowerCase() === query.toLowerCase() ? (
-        <span key={index} className="bg-yellow-200 font-bold">
+        <span key={index} className="bg-yellow-500 font-bold">
           {part}
         </span>
       ) : (
@@ -94,6 +95,26 @@ function App() {
     setIsDialogOpen(false);
   };
 
+  // Dark mode
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("dark-mode");
+    if (savedTheme === "true") {
+      document.documentElement.classList.add("dark");
+      setIsDarkMode(true);
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    if (!isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("dark-mode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("dark-mode", "false");
+    }
+  };
+
   return (
     <div className="mt-10 w-full sm:w-2/3 lg:w-1/2 mx-auto">
       {/* Search Input */}
@@ -110,7 +131,7 @@ function App() {
       <div className="flex justify-center mb-5">
         <button
           className={`border px-4 py-2 mx-2 ${
-            genderFilter === "all" ? "bg-gray-300" : ""
+            genderFilter === "all" ? "bg-gray-400" : ""
           }`}
           onClick={() => setGenderFilter("all")}
         >
@@ -118,7 +139,7 @@ function App() {
         </button>
         <button
           className={`border px-4 py-2 mx-2 ${
-            genderFilter === "Male" ? "bg-gray-300" : ""
+            genderFilter === "Male" ? "bg-gray-400" : ""
           }`}
           onClick={() => setGenderFilter("Male")}
         >
@@ -126,7 +147,7 @@ function App() {
         </button>
         <button
           className={`border px-4 py-2 mx-2 ${
-            genderFilter === "Female" ? "bg-gray-300" : ""
+            genderFilter === "Female" ? "bg-gray-400" : ""
           }`}
           onClick={() => setGenderFilter("Female")}
         >
@@ -193,7 +214,7 @@ function App() {
           id="rowsPerPage"
           value={rowsPerPage}
           onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
-          className="border px-4"
+          className="border px-4 dark:text-black"
         >
           {Array.from({ length: 16 }, (_, index) => index + 5).map((num) => (
             <option key={num} value={num}>
@@ -234,6 +255,16 @@ function App() {
           </ul>
         </dialog>
       )}
+      <div className="flex justify-center my-6">
+        <button
+          className={`border p-2 rounded-xl ${
+            isDarkMode ? "bg-white text-black" : "bg-black text-white"
+          }`}
+          onClick={toggleDarkMode}
+        >
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+      </div>
     </div>
   );
 }
