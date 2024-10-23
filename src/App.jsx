@@ -5,10 +5,14 @@ function App() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [genderFilter, setGenderFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(1);
 
   const getData = async () => {
     try {
-      const response = await fetch("https://hiring-api.simbuka.workers.dev/");
+      const response = await fetch(
+        `https://hiring-api.simbuka.workers.dev/?page=${page}&size=${rowsPerPage}`
+      );
       const result = await response.json();
       setData(result);
     } catch (error) {
@@ -18,7 +22,7 @@ function App() {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [rowsPerPage, page]);
 
   // Sorting
   const sortedData = () => {
@@ -155,6 +159,47 @@ function App() {
           ))}
         </tbody>
       </table>
+      <div>
+        <button
+          className="border px-4"
+          onClick={() => (page > 1 ? setPage(page - 1) : null)}
+        >
+          Previous
+        </button>
+        <button className="border px-4" onClick={() => setPage(page + 1)}>
+          Next
+        </button>
+        <span className="px-2">Rows per page:</span>
+        <select
+          id="rowsPerPage"
+          value={rowsPerPage}
+          onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
+          className="border px-4"
+        >
+          {/* Generating options from 5 to 20 */}
+          {Array.from({ length: 16 }, (_, index) => index + 5).map((num) => (
+            <option key={num} value={num}>
+              {num}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        {/* Page Number Buttons */}
+        <div className="mt-4">
+          {Array.from({ length: 10 }, (_, index) => index + 1).map((num) => (
+            <button
+              key={num}
+              className={`border px-4 mx-1 ${
+                num === page ? "bg-blue-500 text-white" : ""
+              }`}
+              onClick={() => setPage(num)}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
