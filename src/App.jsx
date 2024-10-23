@@ -7,6 +7,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const getData = async () => {
     try {
@@ -82,8 +84,18 @@ function App() {
     );
   };
 
+  // Dialog
+  const handleMoreInfo = (item) => {
+    setSelectedItem(item);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
-    <div className="mt-10 w-full sm:w-1/2 mx-auto">
+    <div className="mt-10 w-full sm:w-2/3 lg:w-1/2 mx-auto">
       {/* Search Input */}
       <div className="flex justify-center mb-5">
         <input
@@ -121,6 +133,7 @@ function App() {
           Female
         </button>
       </div>
+      {/* Table */}
       <table className="w-full">
         <thead>
           <tr>
@@ -155,11 +168,17 @@ function App() {
               <td className="border border-black">
                 {highlightMatch(item.lastName, searchQuery)}
               </td>
+              <td className="text-[0.8rem] border border-black w-28">
+                <button className="border" onClick={() => handleMoreInfo(item)}>
+                  More Information
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div>
+      {/* Control buttons */}
+      <div className="mt-2">
         <button
           className="border px-4"
           onClick={() => (page > 1 ? setPage(page - 1) : null)}
@@ -176,7 +195,6 @@ function App() {
           onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
           className="border px-4"
         >
-          {/* Generating options from 5 to 20 */}
           {Array.from({ length: 16 }, (_, index) => index + 5).map((num) => (
             <option key={num} value={num}>
               {num}
@@ -184,13 +202,14 @@ function App() {
           ))}
         </select>
       </div>
+      {/* Page Number Buttons */}
       <div>
-        {/* Page Number Buttons */}
-        <div className="mt-4">
+        <div className="mt-2">
+          <span>Pages: </span>
           {Array.from({ length: 10 }, (_, index) => index + 1).map((num) => (
             <button
               key={num}
-              className={`border px-4 mx-1 ${
+              className={`border px-4 ${
                 num === page ? "bg-blue-500 text-white" : ""
               }`}
               onClick={() => setPage(num)}
@@ -200,6 +219,21 @@ function App() {
           ))}
         </div>
       </div>
+      {/* Dialog */}
+      {isDialogOpen && selectedItem && (
+        <dialog open className="border p-4 mt-6 rounded-md shadow-lg">
+          <button className="border p-2" onClick={handleCloseDialog}>
+            Close
+          </button>
+          <ul className="list-disc mt-4 pl-5">
+            <li>Identification number: {selectedItem.id}</li>
+            <li>First Name: {selectedItem.firstName}</li>
+            <li>Last Name: {selectedItem.lastName}</li>
+            <li>Birth date: {selectedItem.birthDate}</li>
+            <li>Gender: {selectedItem.gender}</li>
+          </ul>
+        </dialog>
+      )}
     </div>
   );
 }
