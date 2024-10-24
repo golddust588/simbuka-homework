@@ -238,12 +238,23 @@ function App() {
               {num}
             </button>
           ))}
+          {page > 10 ? (
+            <>
+              <span className="px-2">...</span>
+              <button className="border px-4 bg-blue-500 text-white">
+                {page}
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
       {/* Dialog */}
       {isDialogOpen && selectedItem && (
         <dialog open className="border p-4 mt-6 rounded-md shadow-lg">
-          <button className="border p-2" onClick={handleCloseDialog}>
+          <button
+            className="border p-2 dark:border-black"
+            onClick={handleCloseDialog}
+          >
             Close
           </button>
           <ul className="list-disc mt-4 pl-5">
